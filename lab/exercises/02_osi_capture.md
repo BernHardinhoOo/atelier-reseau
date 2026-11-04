@@ -80,14 +80,14 @@ indicateurs `[SYN]`, `[SYN, ACK]`, `[ACK]`. Comment s'appelle cet échange, et �
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _la synchro entre le client et le serveur_
 
 **Question A.2.** Repérez le numéro du paquet contenant la **requête** `GET /` et celui contenant
 la **réponse** `200 OK`. Qui envoie chacun d'eux (IP source) ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _get n°4 ip src 172.20.1.50 et 200 ok n°6 ip src 172.20.0.10._
 
 ---
 
@@ -108,14 +108,14 @@ la **réponse** `200 OK`. Qui envoie chacun d'eux (IP source) ?
 
 | Couche OSI         | Protocole | Champ observé       | Valeur dans ma capture |
 | ------------------ | --------- | ------------------- | ---------------------- |
-| 7 — Application    | HTTP      | Méthode et chemin   | …                      |
-| 4 — Transport      | TCP       | Port source         | …                      |
-| 4 — Transport      | TCP       | Port destination    | …                      |
-| 3 — Réseau         | IPv4      | IP source           | …                      |
-| 3 — Réseau         | IPv4      | IP destination      | …                      |
-| 3 — Réseau         | IPv4      | TTL                 | …                      |
-| 2 — Liaison        | Ethernet  | MAC source          | …                      |
-| 2 — Liaison        | Ethernet  | MAC destination     | …                      |
+| 7 — Application    | HTTP      | Méthode et chemin   |GET   /                 |
+| 4 — Transport      | TCP       | Port source         |59296                   |
+| 4 — Transport      | TCP       | Port destination    |80                      |
+| 3 — Réseau         | IPv4      | IP source           | 172.20.1.50            |
+| 3 — Réseau         | IPv4      | IP destination      | 172.20.0.10            |
+| 3 — Réseau         | IPv4      | TTL                 |64                      |
+| 2 — Liaison        | Ethernet  | MAC source          |62:a4:43:4c:f1:ab       |
+| 2 — Liaison        | Ethernet  | MAC destination     |1a:1e:d9:e8:6b:1b       |
 | 1 — Physique       | —         | (non visible)       | —                      |
 
 **Question B.2.** Le port destination est `80`. Que désigne-t-il ? Le port source est un grand
@@ -123,14 +123,14 @@ nombre (ex. `52790`) : qui l'a choisi, et pourquoi n'est-il pas toujours le mêm
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _http, port ephémere choisi par le client_
 
 **Question B.3.** La **MAC destination** est-elle celle du site web `internet` ? À quelle machine
 appartient-elle ? (Comparez avec `ip neigh` dans le terminal client, et repensez à l'exercice 1.)
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _nan c'est la mac 1a:1e:d9:e8:6b:1b est celle du routeur qui sert de passerelle_
 
 ### Étape 6 — Comparer avec un paquet sans HTTP
 
@@ -145,7 +145,7 @@ dans le paquet 1 ? Pourquoi ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Pile présente : eth > ip > tcp il manque la l7 parceque c'est un syn du handshake tcp donc pas de données envoyés_
 
 ### Étape 7 — Regarder la réponse du serveur
 
@@ -161,7 +161,7 @@ données) ? Aidez-vous de la fiche théorique.
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> __text/html ,<!doctype html> <html lang="fr"> <head> <meta charset="utf-8"> <title>Pseudo-Internet (lab)</title> <style> body { font-family: system-ui, sans-serif; max-width: 720px; margin: 4em auto; padding: 0 1e couche 7__
 
 ---
 
@@ -172,7 +172,7 @@ qu'est l'**encapsulation**, en prenant l'exemple de la requête `GET /` que vous
 Complétez le schéma :
 
 ```
-[ Ethernet | IP | ……… | ……… ]
+[ Ethernet | IP | TCP | HTTP ]
    L2       L3    L4    L7
 ```
 
