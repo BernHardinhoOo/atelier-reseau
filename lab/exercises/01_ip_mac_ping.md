@@ -35,18 +35,18 @@ sur la ligne `inet` se trouvent l'**adresse IP** et le **masque** (après le `/`
 
 | Information        | Valeur pour le client |
 | ------------------ | --------------------- |
-| Nom de l'interface | …                     |
-| Adresse MAC        | …                     |
-| Adresse IP         | …                     |
-| Masque (notation `/`) | …                  |
-| Adresse du réseau  | …                     |
+| Nom de l'interface |eth0@if47              |
+| Adresse MAC        |62:a4:43:4c:f1:ab      |
+| Adresse IP         | 172.20.1.50           |
+| Masque (notation `/`) | /24                |
+| Adresse du réseau  | 172.20.1.0            |
 
 **Question A.2.** Le masque est `/24`. Combien de machines différentes peut-on placer dans ce réseau ?
 (Indice : le dernier nombre de l'adresse peut varier de 0 à 255, mais 2 valeurs sont réservées.)
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _254 adresses utilisables_
 
 ### Étape 2 — Ma passerelle
 
@@ -65,7 +65,7 @@ ip route
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _172.20.1.254_
 
 ---
 
@@ -104,7 +104,7 @@ eu besoin de cette information **avant** de pouvoir envoyer le ping ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _172.20.1.2 dev eth0 lladdr 96:89:aa:68:93:b6 REACHABLE. la mac et l'ip de la machine que l'on vient de ping._
 
 ### Étape 5 — Joindre une machine d'un autre réseau
 
@@ -121,7 +121,7 @@ a-t-il appris la MAC ? Expliquez pourquoi, en vous aidant de la fiche théorique
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _celle de la passerelle 172.20.1.254 1a:1e:d9:e8:6b:1b_
 
 ---
 
@@ -141,7 +141,7 @@ cette différence ? (Indice : chaque routeur traversé diminue le TTL de 1.)
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _TTL=64 et TTL=63 le time to live indique le nombre de sauts (routeurs) restants avant que le paquet de réponse ne soit détruit. _
 
 ### Étape 7 — traceroute
 
@@ -158,7 +158,7 @@ Dessinez (en texte) le chemin suivi : `client → … → internet`.
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _2 sauts 172.20.1.254 et 172.20.0.10 client>serveur>internet_
 
 ### Étape 8 — Le lab est isolé
 
@@ -172,7 +172,7 @@ ping -c 2 -W 2 8.8.8.8
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Destination Net Unreachable surement un parfeu_
 
 ---
 
@@ -182,18 +182,18 @@ ping -c 2 -W 2 8.8.8.8
 
 | Notion        | Explication en une phrase |
 | ------------- | ------------------------- |
-| Adresse IP    | …                         |
-| Adresse MAC   | …                         |
-| Passerelle    | …                         |
-| ARP           | …                         |
-| TTL           | …                         |
+| Adresse IP    | adresse logique           |
+| Adresse MAC   |adresse physique           |
+| Passerelle    |pour faire la transi entre 2 réseaux |
+| ARP           | traduire l'ip en mac                        |
+| TTL           | time to live nombre de routeur a traverser avant la destruction                        |
 
 **Question D.2.** Vrai ou faux ? Justifiez : « Pour envoyer un paquet à `172.20.0.10`, le client met
 dans la trame la MAC de `172.20.0.10`. »
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Faux si pas le meme reseau c'est la mac se la passerelle_
 
 ---
 
