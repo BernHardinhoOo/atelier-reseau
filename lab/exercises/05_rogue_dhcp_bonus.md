@@ -36,7 +36,7 @@ DNS ce serveur donne-t-il aux clients ? Comparez avec `lab/dhcp-server/dnsmasq.c
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _passerelle:172.20.1.99 et dns 172.20.1.99 au lieu de 172.20.1.254_
 
 ---
 
@@ -68,14 +68,14 @@ De quels serveurs viennent-elles ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Je vois deux Offers pour chaque demande : l'une du vrai serveur DHCP (172.20.1.2), qui propose 172.20.1.155 avec la passerelle légitime 172.20.1.254, l'autre du faux serveur (172.20.1.99), qui propose 172.20.1.157 avec lui-même comme passerelle. Les deux répondent au même Discover, car il est envoyé en broadcast_
 
 **Question B.2.** Quelle offre le client a-t-il acceptée (ligne `DHCPOFFER of … from …` et `ip route`) ?
 D'après vous, selon quel critère le client choisit-il ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Aux trois essais, le client a accepté l'offre du vrai serveur (DHCPOFFER of 172.20.1.155 from 172.20.1.2), et ip route donne chaque fois default via 172.20.1.254. Le faux serveur (172.20.1.99) répond aussi, mais sa réponse arrive après. Le client n'applique aucun critère de confiance : il retient la première offre reçue, donc celle du serveur le plus rapide. Ici, le vrai serveur a été plus rapide à chaque essai. Avec davantage d'essais, le faux serveur finirait peut-être par gagner_
 
 ---
 
@@ -92,7 +92,7 @@ curl -m 5 http://172.20.0.10/whoami
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Oui, le site répond (Your perceived source IP (post-NAT) is: 172.20.0.254). La passerelle du client est 172.20.1.254, c'est-à-dire le routeur légitime : le vrai serveur DHCP a gagné la course, donc le client n'a pas été détourné. Si le faux serveur avait gagné, la passerelle aurait été 172.20.1.99. Le client lui aurait envoyé ses paquets, il ne les aurait pas relayés, et curl aurait expiré au bout de 5 secondes._
 
 **Question C.2.** Ici, le faux serveur ne fait pas suivre le trafic : le client perd simplement son accès.
 Un vrai attaquant ferait suivre le trafic **tout en le lisant**. Que pourrait-il voir ou modifier ?
@@ -100,7 +100,7 @@ Un vrai attaquant ferait suivre le trafic **tout en le lisant**. Que pourrait-il
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _lire tout ce qui passe en clair (HTTP, identifiants de formulaires, cookies, mails non chiffrés) et modifier les pages ou les fichiers téléchargés et avec son DNS, répondre aux requêtes par de fausses adresses (DNS spoofing) : le client tape banque.fr et arrive sur un site pirate qui imite l'original (hameçonnage), sans rien remarquer._
 
 ---
 
@@ -128,14 +128,16 @@ dhclient -v eth0
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Surveillance des offres DHCP sur eth0 (Ctrl+C pour arrêter)..._
+_OK     : offre du serveur autorisé 172.20.1.2_
+_ALERTE : serveur DHCP NON autorisé détecté : 172.20.1.99_
 
 **Question D.2.** Expliquez avec vos mots ce que fait le script : quelle information lit-il dans
 chaque Offer, et comment décide-t-il de lever une alerte ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Le script écoute eth0 avec tshark et ne retient que les messages DHCP Offer. Dans chaque Offer, il lit l'identifiant du serveur (DHCP Server Identifier). Il le compare à l'adresse du serveur autorisé (172.20.1.2). Si elles sont identiques, il affiche OK. Sinon, il affiche une ALERTE : un serveur DHCP inconnu propose des adresses sur le réseau._
 
 **Question D.3.** Ce script **détecte** l'attaque, mais l'**empêche**-t-il ? Sur les vrais réseaux, les
 switchs proposent une protection appelée **DHCP Snooping** : seuls les ports déclarés « de confiance »
@@ -143,7 +145,7 @@ ont le droit d'envoyer des Offers. Expliquez pourquoi cette solution est plus ef
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _le script détecte sans empêcher, alors que le DHCP Snooping bloque les Offers venant d'un port non fiable._
 
 ---
 
