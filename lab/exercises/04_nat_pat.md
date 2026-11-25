@@ -61,14 +61,14 @@ docker logs --tail 3 lab_internet
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _172.20.0.254 cest l'ip du routeur coté wan l'ip du cliant est 172.20.1.155_
 
 **Question A.2.** Les adresses `172.20.x.x`, `192.168.x.x` et `10.x.x.x` sont des **adresses privées**
 (voir la fiche). Pourquoi un vrai serveur sur Internet ne pourrait-il pas répondre à une adresse privée ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Les adresses privées ne sont pas routées sur Internet : des millions de réseaux utilisent les mêmes plages (192.168.x.x, etc.), et les routeurs d'Internet les rejettent. Une adresse privée n'identifie donc aucune machine unique dans le monde, et la réponse du serveur n'aurait aucun chemin pour revenir._
 
 ---
 
@@ -111,28 +111,28 @@ tcp 6 119 TIME_WAIT src=172.20.1.50 dst=172.20.0.10 sport=52942 dport=80 src=172
 
 | Sens   | IP source | IP destination | Port source | Port destination |
 | ------ | --------- | -------------- | ----------- | ---------------- |
-| Aller  | …         | …              | …           | …                |
-| Retour | …         | …              | …           | …                |
+| Aller  |172.20.1.155|172.20.0.10    | 38910       | 80               |
+| Retour |172.20.0.10|172.20.0.254    | 80          | 38910            |
 
 Dans le sens **retour**, à quelle adresse le serveur répond-il ? Qui fait la traduction vers le client ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _172.20.0.254, l'adresse du routeur c'est lui qui fait la traduction_
 
 **Question B.2.** Combien de lignes voyez-vous pour vos 3 requêtes ? Les **ports source** sont-ils
 identiques ? Pourquoi est-ce indispensable quand plusieurs PC partagent la même adresse publique ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _3 lignes pour 3 requetes,les ports sources sont différents car chaque connexion utilise un port éphémère différent. C'est indispensable quand plusieurs PC partagent la même adresse publique : le routeur voit arriver des réponses toutes adressées à sa seule IP, et c'est le port qui lui permet de savoir à quelle connexion, donc à quel PC, elles appartiennent._
 
 **Question B.3.** On parle de **PAT** (*Port Address Translation*) quand plusieurs machines partagent
 **une seule** IP publique grâce aux ports. Notre routeur fait-il du NAT simple ou du PAT ? Justifiez.
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Du PAT Plusieurs machines du LAN peuvent sortir avec une seule adresse, et les connexions sont distinguées par leurs ports_
 
 ---
 
@@ -173,14 +173,14 @@ docker logs --tail 3 lab_internet
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Le client n'obtient aucune réponse : curl attend puis abandonne au bout de 5 secondes avec Connection timed out (« Operation timed out »). Le journal du serveur web ne montre aucune nouvelle ligne : il n'a jamais reçu de requête exploitable._
 
 **Question C.2.** Dans la capture côté WAN, quelle **IP source** porte le paquet `[S]` (SYN) qui sort ?
 Le paquet **aller** est bien parti : pourquoi la **réponse** ne revient-elle jamais au client ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Le paquet [S] sort avec l'IP source 172.20.1.155, l'adresse privée du client, car plus aucune règle ne la remplace. Le paquet aller part donc bien, mais le serveur (ou, dans la réalité, le réseau) ne sait pas renvoyer la réponse vers une adresse privée : elle n'est pas routable depuis le côté WAN. Le SYN-ACK n'arrive jamais au client, la connexion TCP ne s'établit pas et curl finit par expirer._
 
 ### Étape 9 — Réparer
 
@@ -207,20 +207,20 @@ le serveur web **et** de sa réponse, en indiquant à quel moment l'adresse est 
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Le client envoie un paquet vers 172.20.0.10 avec sa source 172.20.1.155. Il arrive au routeur, qui le fait sortir par wan. C'est à ce moment que l'adresse source est traduite : 172.20.1.155 devient 172.20.0.254, et le routeur enregistre la correspondance (adresse et port) dans sa table conntrack. Le serveur web voit une requête venant du routeur et répond à 172.20.0.254. À l'arrivée de la réponse, le routeur consulte sa table, retraduit l'adresse de destination en 172.20.1.155 et la transmet au client._
 
 **Question D.2.** Chez vous, combien d'adresses IP publiques votre box possède-t-elle en général ?
 Combien d'appareils l'utilisent ? Quel mécanisme rend cela possible ?
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _une seule grace au NAT/PAT_
 
 **Question D.3.** Pourquoi le NAT a-t-il été inventé ? (Indice : combien existe-t-il d'adresses IPv4 au total ?)
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Il y a 2^32 addresses en IPV4 (4.3 milliards),le NAT a été inventé pour économiser les addresses publiques_
 
 ---
 
@@ -248,13 +248,13 @@ curl http://172.20.1.254:8080/whoami
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Le client a demandé 172.20.1.254:8080 (le routeur), mais c'est le serveur web (172.20.0.10, port 80) qui a réellement répondu. Dans la ligne conntrack, les deux ont été traduites. La destination l'a été par le DNAT : 172.20.1.254:8080 devient 172.20.0.10:80. La source l'a été par le MASQUERADE : 172.20.1.155 devient 172.20.0.254 à la sortie par wan. On le voit dans le groupe retour : le serveur répond à 172.20.0.254 et non au client._
 
 **Question P.2.** Donnez un exemple de situation où vous auriez besoin d'une redirection de port chez vous.
 
 > 💬 **Votre réponse :**
 >
-> _Remplacez ce texte par votre réponse._
+> _Pour héberger un serveur minecraft_
 
 🔀 Nettoyage : `iptables -t nat -D PREROUTING 1`
 
